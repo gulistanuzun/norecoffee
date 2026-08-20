@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/Gülistan/.claude/plans/**)",
+      "Bash(npm run *)"
+    ]
+  }
+}
