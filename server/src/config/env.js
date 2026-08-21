@@ -1,4 +1,9 @@
 import 'dotenv/config';
+import dns from 'node:dns';
+
+// Windows sometimes hands Node an IPv6 link-local resolver that fails SRV lookups
+// (mongodb+srv://) with ECONNREFUSED; force a public DNS server instead.
+dns.setServers(['8.8.8.8', '1.1.1.1']);
 
 const required = ['MONGODB_URI', 'JWT_SECRET'];
 
