@@ -1,19 +1,35 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { getProducts } from '../api/products.api.js';
+import { ProductCard } from '../components/product/ProductCard.jsx';
 
 export function Shop() {
   const [products, setProducts] = useState([]);
   const [status, setStatus] = useState('loading');
+  const [page, setPage] = useState(1);
+const [totalPages, setTotalPages] = useState(1);
+const [loadingMore, setLoadingMore] = useState(false);
 
-  useEffect(() => {
-    getProducts()
-      .then(({ products: list }) => {
-        setProducts(list);
-        setStatus('ready');
-      })
-      .catch(() => setStatus('error'));
-  }, []);
+useEffect(() => {
+  getProducts({ page: 1 })
+    .then(({ products: list, pages }) => {
+      setProducts(list);
+      setTotalPages(pages);
+      setStatus('ready');
+    })
+    .catch(() => setStatus('error'));
+}, []);
+
+function handleLoadMore() {
+  const nextPage = page + 1;
+  setLoadingMore(true);
+  getProducts({ page: nextPage })
+    .then(({ products: list }) => {
+      setProducts((prev) => [...prev, ...list]);
+      setPage(nextPage);
+    })
+    .finally(() => setLoadingMore(false));
+}
 
   return (
     <section className="mx-auto max-w-6xl px-6 py-16">
@@ -29,19 +45,31 @@ export function Shop() {
         <p className="mt-8 text-charcoal/70">No products yet — run the seed script.</p>
       )}
 
-      <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {products.map((product) => (
-          <Link
-            key={product.id}
-            to={`/shop/${product.slug}`}
-            className="rounded-lg border border-cream-dark bg-ivory p-4 transition-shadow hover:shadow-lg"
-          >
-            <h2 className="font-display text-xl text-espresso">{product.name}</h2>
-            <p className="mt-1 text-sm text-charcoal/70">{product.origin}</p>
-            <p className="mt-2 font-medium text-gold">${product.price}</p>
-          </Link>
-        ))}
-      </div>
+<motion.div
+  className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+  initial="hidden"
+  animate="show"
+  variants={{
+    hidden: {},
+    show: { transition: { staggerChildren: 0.08 } },
+  }}
+>
+  {products.map((product) => (
+    <ProductCard key={product.id} product={product} />
+  ))}
+</motion.div>
+{status === 'ready' && page < totalPages && (
+  <div className="mt-12 flex justify-center">
+    <button
+      type="button"
+      onClick={handleLoadMore}
+      disabled={loadingMore}
+      className="rounded-full border border-gold px-8 py-3 font-display text-lg text-gold transition-colors hover:bg-gold hover:text-espresso disabled:opacity-50"
+    >
+      {loadingMore ? 'Loading...' : 'Show More'}
+    </button>
+  </div>
+)}
     </section>
   );
 }
