@@ -44,6 +44,7 @@ userSchema.methods.comparePassword = function comparePassword(candidate) {
 };
 
 userSchema.set('toJSON', {
+  virtuals: true,
   transform: (_doc, ret) => {
     delete ret.passwordHash;
     delete ret.__v;

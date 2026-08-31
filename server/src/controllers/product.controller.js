@@ -9,7 +9,7 @@ const SORT_MAP = {
 };
 
 export const getProducts = asyncHandler(async (req, res) => {
-  const { roast, origin, minPrice, maxPrice, search, sort, page = 1, limit = 12 } = req.query;
+  const { roast, origin, minPrice, maxPrice, search, sort, featured, page = 1, limit = 12 } = req.query;
 
   const filter = {};
   if (roast) filter.roastLevel = roast;
@@ -20,6 +20,7 @@ export const getProducts = asyncHandler(async (req, res) => {
     if (maxPrice) filter.price.$lte = Number(maxPrice);
   }
   if (search) filter.$text = { $search: search };
+  if (featured === 'true') filter.featured = true;
 
   const pageNum = Math.max(1, Number(page));
   const limitNum = Math.min(50, Math.max(1, Number(limit)));

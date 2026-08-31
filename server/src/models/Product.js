@@ -33,4 +33,12 @@ const productSchema = new mongoose.Schema(
 productSchema.index({ roastLevel: 1 });
 productSchema.index({ name: 'text', description: 'text', origin: 'text' });
 
+productSchema.set('toJSON', {
+  virtuals: true,
+  transform: (_doc, ret) => {
+    delete ret.__v;
+    return ret;
+  },
+});
+
 export const Product = mongoose.model('Product', productSchema);
