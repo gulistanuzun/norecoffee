@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link, NavLink, Outlet } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth.js';
 import { useCart } from '../hooks/useCart.js';
+import { CartDrawer } from '../components/cart/CartDrawer.jsx';
+import { Toaster } from '../components/ui/Toaster.jsx';
 
 const MotionLink = motion.create(Link);
 
@@ -44,7 +46,7 @@ function NavItem({ to, end, children }) {
 
 export function RootLayout() {
   const { user, logout } = useAuth();
-  const { items } = useCart();
+  const { items, openCart } = useCart();
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -92,14 +94,19 @@ useEffect(() => {
               Home
             </NavItem>
             <NavItem to="/shop">Shop</NavItem>
-            <NavLink to="/cart" className="relative flex items-center text-cream">
-  <CartIcon />
-  {itemCount > 0 && (
-    <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-gold text-xs font-semibold text-espresso">
-      {itemCount}
-    </span>
-  )}
-</NavLink>
+            <button
+              type="button"
+              onClick={openCart}
+              aria-label="Open cart"
+              className="relative flex items-center text-cream transition-colors hover:text-gold"
+            >
+              <CartIcon />
+              {itemCount > 0 && (
+                <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-gold text-xs font-semibold text-espresso">
+                  {itemCount}
+                </span>
+              )}
+            </button>
 
             {user ? (
               <>
@@ -150,7 +157,16 @@ useEffect(() => {
         Home
       </NavItem>
       <NavItem to="/shop">Shop</NavItem>
-      <NavItem to="/cart">Cart ({itemCount})</NavItem>
+      <button
+        type="button"
+        onClick={() => {
+          setMenuOpen(false);
+          openCart();
+        }}
+        className="font-display text-lg tracking-wide text-cream sm:text-xl"
+      >
+        Cart ({itemCount})
+      </button>
       {user ? (
         <>
           <NavItem to="/profile">Profile</NavItem>
@@ -179,6 +195,9 @@ useEffect(() => {
       <footer className="bg-espresso py-8 text-center text-sm text-cream">
         <p>&copy; {new Date().getFullYear()} NoreCoffee. All rights reserved.</p>
       </footer>
+
+      <CartDrawer />
+      <Toaster />
     </div>
   );
 }

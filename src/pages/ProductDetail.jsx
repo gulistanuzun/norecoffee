@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { getProductBySlug } from '../api/products.api.js';
 import { useCart } from '../hooks/useCart.js';
+import { useToast } from '../hooks/useToast.js';
 
 const roastLabels = {
   light: 'Light Roast',
@@ -14,7 +15,14 @@ export function ProductDetail() {
   const [product, setProduct] = useState(null);
   const [status, setStatus] = useState('loading');
   const [quantity, setQuantity] = useState(1);
-  const { addItem } = useCart();
+  const { addItem, openCart } = useCart();
+  const { toast } = useToast();
+
+  const handleAddToCart = () => {
+    addItem(product, quantity);
+    toast(`${product.name} added to cart`);
+    openCart();
+  };
 
   useEffect(() => {
     setStatus('loading');
@@ -93,7 +101,7 @@ export function ProductDetail() {
 
       <button
         type="button"
-        onClick={() => addItem(product, quantity)}
+        onClick={handleAddToCart}
         disabled={product.stock === 0}
         className="rounded-full bg-espresso px-8 py-3 text-sm uppercase tracking-wide text-ivory transition-colors hover:bg-gold hover:text-espresso disabled:opacity-50"
       >
