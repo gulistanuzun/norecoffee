@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { getProducts } from '../api/products.api.js';
 import { ProductCard } from '../components/product/ProductCard.jsx';
+import { ProductCardSkeleton } from '../components/product/ProductCardSkeleton.jsx';
 
 export function Shop() {
   const [products, setProducts] = useState([]);
@@ -35,16 +36,26 @@ function handleLoadMore() {
     <section className="mx-auto max-w-6xl px-6 py-16">
       <h1 className="font-display text-4xl text-espresso">Shop</h1>
 
-      {status === 'loading' && <p className="mt-8 text-charcoal/70">Loading products...</p>}
+      {status === 'loading' && (
+  <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    {Array.from({ length: 6 }).map((_, i) => (
+      <ProductCardSkeleton key={i} />
+    ))}
+  </div>
+)}
+
       {status === 'error' && (
         <p className="mt-8 text-charcoal/70">
           Couldn't reach the product catalog. Make sure the backend is running.
         </p>
       )}
       {status === 'ready' && products.length === 0 && (
-        <p className="mt-8 text-charcoal/70">No products yet — run the seed script.</p>
+        <div className="mt-16 flex flex-col items-center gap-3 text-center">
+          <p className="font-display text-2xl text-espresso">No coffee here yet</p>
+          <p className="text-charcoal/60">Check back soon — we're roasting a fresh batch.</p>
+        </div>
       )}
-
+{status === 'ready' && products.length > 0 && (
 <motion.div
   className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
   initial="hidden"
@@ -58,6 +69,7 @@ function handleLoadMore() {
     <ProductCard key={product.id} product={product} />
   ))}
 </motion.div>
+)}
 {status === 'ready' && page < totalPages && (
   <div className="mt-12 flex justify-center">
     <button
