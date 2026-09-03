@@ -25,7 +25,7 @@ export function Checkout() {
         shippingAddress: address,
       });
       clearCart();
-      navigate('/profile/orders', { state: { confirmedOrderId: order.id } });
+      navigate(`/order-confirmation/${order.id}`);
     } catch (err) {
       setError(err.response?.data?.message ?? 'Something went wrong placing your order.');
       setStatus('idle');

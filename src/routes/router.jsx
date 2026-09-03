@@ -11,6 +11,7 @@ import { Profile } from '../pages/Profile.jsx';
 import { Register } from '../pages/Register.jsx';
 import { Shop } from '../pages/Shop.jsx';
 import { ProtectedRoute } from './ProtectedRoute.jsx';
+import { OrderConfirmation } from '../pages/OrderConfirmation.jsx';
 
 export const router = createBrowserRouter([
   {
@@ -28,6 +29,7 @@ export const router = createBrowserRouter([
         children: [
           { path: 'checkout', element: <Checkout /> },
           { path: 'profile', element: <Profile /> },
+          { path: 'order-confirmation/:id', element: <OrderConfirmation /> },
           { path: 'profile/orders', element: <OrderHistory /> },
         ],
       },
