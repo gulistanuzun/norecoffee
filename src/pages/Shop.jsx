@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
 import { getProducts } from '../api/products.api.js';
 import { ProductCard } from '../components/product/ProductCard.jsx';
 import { ProductCardSkeleton } from '../components/product/ProductCardSkeleton.jsx';
@@ -56,20 +55,13 @@ function handleLoadMore() {
         </div>
       )}
 {status === 'ready' && products.length > 0 && (
-<motion.div
-  className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
-  initial="hidden"
-  animate="show"
-  variants={{
-    hidden: {},
-    show: { transition: { staggerChildren: 0.08 } },
-  }}
->
-  {products.map((product) => (
-    <ProductCard key={product.id} product={product} />
-  ))}
-</motion.div>
+  <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    {products.map((product, index) => (
+      <ProductCard key={product.id} product={product} index={index} />
+    ))}
+  </div>
 )}
+
 {status === 'ready' && page < totalPages && (
   <div className="mt-12 flex justify-center">
     <button

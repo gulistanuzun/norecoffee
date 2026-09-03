@@ -7,15 +7,16 @@ const roastLabels = {
   dark: 'Dark Roast',
 };
 
-export function ProductCard({ product }) {
+export function ProductCard({ product, index = 0 }) {
   return (
     <motion.div
-      variants={{
-        hidden: { opacity: 0, y: 24 },
-        show: { opacity: 1, y: 0 },
-      }}
-      transition={{ duration: 0.5, ease: 'easeOut' }}
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.5, ease: 'easeOut', delay: (index % 3) * 0.1 }}
+      whileHover={{ y: -6, transition: { duration: 0.25, ease: 'easeOut' } }}
     >
+
       <Link
         to={`/shop/${product.slug}`}
         className="group block overflow-hidden rounded-lg border border-cream-dark bg-ivory transition-shadow hover:shadow-xl"

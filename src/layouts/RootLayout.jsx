@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link, NavLink, Outlet } from 'react-router-dom';
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth.js';
 import { useCart } from '../hooks/useCart.js';
 import { CartDrawer } from '../components/cart/CartDrawer.jsx';
@@ -45,6 +45,7 @@ function NavItem({ to, end, children }) {
 }
 
 export function RootLayout() {
+  const location = useLocation();
   const { user, logout } = useAuth();
   const { items, openCart } = useCart();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -189,8 +190,19 @@ useEffect(() => {
       </header>
 
       <main className="flex-1">
-        <Outlet />
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={location.pathname}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+          >
+            <Outlet />
+          </motion.div>
+        </AnimatePresence>
       </main>
+
 
       <footer className="bg-espresso py-8 text-center text-sm text-cream">
         <p>&copy; {new Date().getFullYear()} NoreCoffee. All rights reserved.</p>
