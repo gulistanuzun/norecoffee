@@ -30,4 +30,8 @@
   h3 {
     @apply font-display;
   }
+    *:focus-visible {
+    @apply outline-none ring-2 ring-gold ring-offset-2 ring-offset-cream;
+  }
+
 }

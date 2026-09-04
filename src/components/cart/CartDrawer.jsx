@@ -1,16 +1,19 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useCart } from '../../hooks/useCart.js';
 
 export function CartDrawer() {
   const { items, removeItem, updateQuantity, subtotal, isOpen, closeCart } = useCart();
+  const closeButtonRef = useRef(null);
 
   useEffect(() => {
     if (!isOpen) return;
     const onKey = (e) => e.key === 'Escape' && closeCart();
     window.addEventListener('keydown', onKey);
     document.body.style.overflow = 'hidden';
+    closeButtonRef.current?.focus();
+
     return () => {
       window.removeEventListener('keydown', onKey);
       document.body.style.overflow = '';
@@ -38,6 +41,9 @@ export function CartDrawer() {
 
           <motion.aside
             className="absolute right-0 top-0 flex h-full w-full max-w-md flex-col bg-cream shadow-2xl"
+              role="dialog"
+  aria-modal="true"
+  aria-label="Shopping cart"
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
@@ -48,6 +54,7 @@ export function CartDrawer() {
                 Your Cart{itemCount > 0 && <span className="text-charcoal/50"> ({itemCount})</span>}
               </h2>
               <button
+                ref={closeButtonRef}
                 type="button"
                 onClick={closeCart}
                 aria-label="Close"
