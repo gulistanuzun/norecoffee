@@ -10,31 +10,31 @@ NoreCoffee — a full-stack luxury coffee e-commerce site (React + Node/Express 
 
 ## Current build status (in progress)
 
-**Backend (`server/`) — Phase 1 & 2 done, untested against a real DB.**
+**Backend (`server/`) — Phase 1 & 2 done, verified against a real DB.**
 - Express app, Mongoose models (`User`, `Product`, `Order`), JWT auth (register/login/me), product API (filter/search/pagination by slug), order API (create/mine/mine/:id), centralized error handling, validation (express-validator), rate limiting + helmet + cors.
-- `server/.env` exists locally with a generated `JWT_SECRET` and `MONGODB_URI=mongodb://localhost:27017/norecoffee`.
-- **No MongoDB is installed/running on this machine.** Server code loads and starts without syntax errors (verified via `node src/index.js`, hangs on DB connect as expected) but auth/product/order endpoints have NOT been exercised end-to-end yet. Before further backend testing: either install/start a local MongoDB, or swap `MONGODB_URI` in `server/.env` for a MongoDB Atlas free-tier connection string.
-- Seed script ready: `npm --prefix server run seed` (14 coffee products) — needs a working DB connection first.
+- `server/.env` holds a **MongoDB Atlas** connection string (`MONGODB_URI`, free-tier cluster) and a generated `JWT_SECRET` — no local MongoDB install needed.
+- **Connection verified 2026-09-04**: connected successfully via mongoose, database `norecoffee` has `products` (19 docs), `users` (3 docs), `orders` (2 docs) — meaning register/login and at least one checkout have already been exercised against real data, not just in theory.
+- Seed script: `npm --prefix server run seed` (wipes and reseeds `products`).
 
-**Frontend (root) — Phase 3 complete. Builds and lints clean; not yet visually verified in a browser (no MongoDB running to exercise real data).**
+**Frontend (root) — well past Phase 3; most of Phase 6/7 is already in place.**
 - Installed: `react-router-dom`, `framer-motion`, `gsap`, `axios`, `tailwindcss` + `@tailwindcss/vite`, `@fontsource/cormorant-garamond`, `@fontsource/inter`.
-- `vite.config.js` updated: `tailwindcss()` plugin added, `/api` dev proxy to `http://localhost:5000` configured.
-- `src/index.css` rewritten with Tailwind v4 `@theme` tokens (espresso/cream/gold luxury palette, Cormorant Garamond + Inter fonts) — see the plan file for exact hex values and usage rules.
-- `src/api/`: `client.js`, `auth.api.js`, `products.api.js`, `orders.api.js` — thin axios wrappers matching the backend controller response shapes exactly (`{ user, token }`, `{ products, total, page, pages }`, `{ order }`, `{ orders }`, etc.).
-- `src/context/AuthContext.jsx` (hydrates from `/api/auth/me` on mount if a token exists, login/register/logout) and `CartContext.jsx` (localStorage-persisted cart, add/remove/updateQuantity/subtotal). Paired hooks in `src/hooks/useAuth.js` / `useCart.js`.
-- `src/layouts/RootLayout.jsx` — navbar (with live cart count, auth-aware login/logout) + footer + `<Outlet/>`.
-- `src/routes/router.jsx` (`createBrowserRouter`) + `ProtectedRoute.jsx` — routes: `/`, `/shop`, `/shop/:slug`, `/cart`, `/login`, `/register`, protected `/checkout`, `/profile`, `/profile/orders`, `*` → NotFound.
-- `src/pages/`: Home, Shop (fetches `/api/products`, doubles as the proxy "ping test"), ProductDetail, Cart, Checkout (shipping form → `POST /api/orders`), Login, Register, Profile, OrderHistory, NotFound. All are functional but intentionally plain — Tailwind-styled with the luxury palette, no Framer Motion/GSAP polish yet (that's Phase 6).
-- `src/App.jsx` now just renders `<RouterProvider router={router} />`; `main.jsx` wraps it in `AuthProvider` + `CartProvider` (no `BrowserRouter` needed since the router is created directly).
-- `npm run build` and `npm run lint` both pass (lint has 2 harmless `only-export-components` fast-refresh warnings from the context files, no errors).
-- **Not yet done**: actual browser verification of the golden path (product list → detail → cart → checkout → order confirmation → profile/order history) — needs a running MongoDB (see backend section) since the DB isn't up on this machine yet.
+- `vite.config.js`: `tailwindcss()` plugin + `/api` dev proxy to `http://localhost:5000`.
+- `src/index.css`: Tailwind v4 `@theme` tokens (espresso/cream/gold luxury palette, Cormorant Garamond + Inter) — see the plan file for exact values.
+- `src/api/`, `src/context/` (`AuthContext`, `CartContext`, `ToastContext`), `src/hooks/` (`useAuth`, `useCart`) as originally scaffolded.
+- `src/layouts/RootLayout.jsx` — navbar (live cart count, auth-aware) + footer + `<Outlet/>`.
+- `src/routes/router.jsx` + `ProtectedRoute.jsx` — all routes from the plan are wired, including `*` → `NotFound`.
+- Pages are no longer "plain": `ProductCard`/`ProductCardSkeleton`, `FilterSidebar` (roast/price/sort + mobile toggle), `CartDrawer` (slide-in from the right) + toast notifications (`ToastContext`/`Toaster`), loading skeletons and improved empty states on Shop, `OrderConfirmation` page after checkout, and a fully reworked luxury `Profile` page (hero panel, gold-framed stats, animated blocks).
+- Animation split matches the plan: **Framer Motion** does page transitions, cart drawer, hover/scroll-reveal on product cards, staggered page sections (e.g. `Profile.jsx`); **GSAP** (`gsap.timeline` + `ScrollTrigger`) is used in `HeroSection.jsx` and `BrandStory.jsx` for the parallax/cinematic hero and brand-story scroll choreography — this is the intended scope per the plan, not a partial implementation.
+- `npm run build` and `npm run lint` both pass.
+- **Not yet done**: a *deliberate, checklist-style* manual browser pass over the full golden path (register → browse/filter → detail → cart → checkout → confirmation → profile/order history → logged-out redirect checks) hasn't been logged, even though the DB data shows ad-hoc testing already happened. Also outstanding: a dedicated responsive/breakpoint pass and an accessibility pass (focus states, alt text) called out in the plan's Phase 6/7.
 
 ## Immediate next steps (resume here)
 
-1. Get a MongoDB instance reachable (local install/service, or swap `MONGODB_URI` in `server/.env` for an Atlas free-tier connection string), then run `npm --prefix server run seed`.
-2. Run both dev servers (`npm run dev` + `npm --prefix server run dev`) and manually verify the golden path in a browser: browse/filter products → product detail → add to cart → checkout (shipping form) → order confirmation → profile/order history; also verify protected routes redirect to `/login` when logged out.
-3. Phase 4/5 polish: the pages built during Phase 3 are functional but minimal — flesh out ProductCard/ProductGrid/FilterSidebar, CartDrawer (slide-in, not just a full Cart page), toasts, loading skeletons, empty states.
-4. Then continue with the phase order in the plan file: Phase 6 (Framer Motion page transitions + cart drawer + hover/reveal, GSAP hero/brand-story) → responsive pass.
+1. Do a deliberate end-to-end golden-path pass in the browser (both dev servers running) and note any bugs found — DB already has real data so this can start immediately, no MongoDB setup needed.
+2. Responsive pass: mobile nav, grid breakpoints, checkout form, FilterSidebar mobile toggle.
+3. Accessibility pass: focus states, alt text, keyboard nav through cart drawer/toasts/modals.
+4. Optional/remaining polish from the plan's Phase 7: write a real `README.md` (currently still the default Vite template — this needs replacing before using the repo as a CV piece), consider deployment (Vercel/Netlify + Render/Railway, Atlas is already in place).
+5. Note: `src/pages/Profile.jsx` has uncommitted changes on top of the last commit (`404de0b`) — review and commit when ready.
 
 ## Commands
 
