@@ -34,7 +34,7 @@ NoreCoffee — a full-stack luxury coffee e-commerce site (React + Node/Express 
 
 1. Do a deliberate end-to-end golden-path pass in the browser (both dev servers running) and note any bugs found — DB already has real data so this can start immediately, no MongoDB setup needed. Also a good moment to chase down the `/api/auth/login` 502 console error noted above.
 2. Accessibility pass — finish the last piece: audit images across the site (`ProductCard`, `ProductDetail`, `HeroSection`, `BrandStory`, `Cart`, `FilterSidebar`, `FormField`) and mark purely decorative ones `aria-hidden="true"` (or `alt=""`); content images already have real `alt` text. Also worth re-verifying the CartDrawer focus ring once the uBlock Origin interference (noted above) is ruled out.
-3. Optional/remaining polish from the plan's Phase 7: write a real `README.md` (currently still the default Vite template — this needs replacing before using the repo as a CV piece), consider deployment (Vercel/Netlify + Render/Railway, Atlas is already in place).
+3. Remaining optional polish from the plan's Phase 7: consider deployment (Vercel/Netlify + Render/Railway, Atlas is already in place). `README.md` is done (2026-09-04) — real feature list, stack, structure, and setup steps replaced the default Vite template.
 
 ## Commands
 
