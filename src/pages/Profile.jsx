@@ -1,6 +1,8 @@
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth.js';
+import { getMyOrders } from '../api/orders.api.js';
 
 const shortcuts = [
   {
@@ -34,7 +36,16 @@ const rise = {
 };
 
 export function Profile() {
-  const { user } = useAuth();
+   const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const [orderCount, setOrderCount] = useState(null);
+
+  useEffect(() => {
+    getMyOrders()
+      .then(({ orders }) => setOrderCount(orders.length))
+      .catch(() => setOrderCount(0));
+  }, []);
+
   const initial = user?.name?.charAt(0).toUpperCase() ?? '?';
   const memberSince = user?.createdAt
     ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
@@ -42,10 +53,11 @@ export function Profile() {
   const addressCount = user?.addresses?.length ?? 0;
 
   const stats = [
+    { k: 'Orders placed', v: orderCount ?? '—' },
     { k: 'Member since', v: memberSince },
     { k: 'Saved addresses', v: addressCount },
-    { k: 'Tier', v: 'Signature' },
   ];
+
 
   return (
     <section className="relative mx-auto max-w-3xl px-6 py-16">
@@ -202,6 +214,19 @@ export function Profile() {
               </li>
             ))}
           </ul>
+        </motion.div>
+
+        <motion.div variants={rise} className="mt-8 text-center">
+          <button
+            type="button"
+            onClick={() => {
+              logout();
+              navigate('/');
+            }}
+            className="text-xs uppercase tracking-[0.25em] text-charcoal/40 transition-colors hover:text-gold"
+          >
+            Sign out
+          </button>
         </motion.div>
       </motion.div>
     </section>
