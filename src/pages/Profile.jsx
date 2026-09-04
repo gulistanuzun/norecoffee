@@ -122,7 +122,7 @@ export function Profile() {
         </motion.div>
 
         {/* stats */}
-        <motion.div variants={rise} className="mt-6 grid grid-cols-3 gap-4">
+       <motion.div variants={rise} className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
           {stats.map((s) => (
             <div
               key={s.k}

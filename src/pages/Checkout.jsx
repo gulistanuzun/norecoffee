@@ -59,7 +59,7 @@ export function Checkout() {
           onChange={handleChange('line2')}
           className="rounded border border-cream-dark bg-ivory px-4 py-2"
         />
-        <div className="flex gap-4">
+       <div className="flex flex-col gap-4 sm:flex-row">
           <input
             required
             placeholder="City"
